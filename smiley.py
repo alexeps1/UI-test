@@ -4,7 +4,7 @@ print("😊")
 print()
 print("Or using keyboard characters:")
 print(":)")
-print(":-)")
+
 print("=)")
 print()
 print("ASCII art version:")
