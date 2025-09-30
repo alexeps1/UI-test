@@ -9,6 +9,51 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, 
+                #fef3c7 0%, 
+                #fed7aa 25%, 
+                #dc2626 50%, 
+                #f59e0b 75%, 
+                #fbbf24 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        
+        /* Add subtle grain texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Glassmorphism effect for main container */
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Enhanced button styling */
+        button {
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Input field styling */
+        input[type="text"] {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
         .gradient-header {
@@ -260,12 +305,12 @@
         <!-- Side buttons -->
         <div class="flex justify-between items-start mb-12">
             <!-- History button -->
-            <button id="historyBtn" class="bg-gray-100 hover:bg-red-100 text-gray-700 hover:text-red-600 px-6 py-3 rounded-lg transition-all duration-200 font-medium">
+            <button id="historyBtn" class="bg-white hover:bg-gray-50 text-black px-6 py-3 rounded-lg transition-all duration-200 font-medium shadow-lg hover:shadow-xl">
                 History
             </button>
             
             <!-- Filters button -->
-            <button id="filtersBtn" class="bg-gray-100 hover:bg-red-100 text-gray-700 hover:text-red-600 px-6 py-3 rounded-lg transition-all duration-200 font-medium">
+            <button id="filtersBtn" class="bg-white hover:bg-gray-50 text-black px-6 py-3 rounded-lg transition-all duration-200 font-medium shadow-lg hover:shadow-xl">
                 Filters
             </button>
         </div>
@@ -279,32 +324,32 @@
             </div>
             
             <!-- Get shortlist button - more prominent -->
-            <button id="getShortlistBtn" class="bg-black hover:bg-gray-800 text-white px-16 py-5 rounded-2xl text-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+            <button id="getShortlistBtn" class="bg-white hover:bg-gray-50 text-black px-16 py-5 rounded-2xl text-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
                 Get Shortlist
             </button>
             
             <!-- Quick upload option -->
             <div class="mt-4">
-                <button id="uploadBtn" class="text-gray-500 hover:text-gray-700 text-sm underline transition-colors duration-200">
+                <button id="uploadBtn" class="text-gray-800 hover:text-black text-sm underline transition-colors duration-200 font-medium">
                     or upload audio file
                 </button>
             </div>
             
             <!-- Quick demo options -->
             <div class="mt-8 text-center">
-                <p class="text-sm text-gray-400 mb-3">Quick start:</p>
+                <p class="text-sm text-gray-800 mb-3 font-medium">Quick start:</p>
                 <div class="flex justify-center space-x-2 flex-wrap gap-2">
-                    <button id="demoSpotify" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-full text-xs transition-all duration-200 transform hover:scale-105">
+                    <button id="demoSpotify" class="bg-white hover:bg-gray-50 text-black px-3 py-1 rounded-full text-xs transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg">
                         Spotify
                     </button>
-                    <button id="demoYouTube" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full text-xs transition-all duration-200 transform hover:scale-105">
+                    <button id="demoYouTube" class="bg-white hover:bg-gray-50 text-black px-3 py-1 rounded-full text-xs transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg">
                         YouTube
                     </button>
-                    <button id="demoFile" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-full text-xs transition-all duration-200 transform hover:scale-105">
+                    <button id="demoFile" class="bg-white hover:bg-gray-50 text-black px-3 py-1 rounded-full text-xs transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg">
                         File
                     </button>
                 </div>
-                <p class="text-xs text-gray-300 mt-2">Press Enter to search • Esc to clear • ⌘K to focus</p>
+                <p class="text-xs text-gray-700 mt-2 font-medium">Press Enter to search • Esc to clear • ⌘K to focus</p>
             </div>
         </div>
     </div>
@@ -412,7 +457,7 @@
             </div>
             
             <!-- Apply Filters Button -->
-            <button id="applyFilters" class="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-medium transition-colors duration-200">
+            <button id="applyFilters" class="w-full bg-white hover:bg-gray-50 text-black py-3 rounded-lg font-medium transition-colors duration-200 shadow-lg hover:shadow-xl">
                 Apply Filters
             </button>
         </div>
@@ -982,13 +1027,13 @@
                                     </div>
                                 </div>
                                 <div class="flex space-x-2">
-                                    <button class="similarity-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs font-medium transition-all duration-200" data-composer-id="${composer.id}">
+                                    <button class="similarity-btn bg-white hover:bg-gray-50 text-black px-2 py-1 rounded text-xs font-medium transition-all duration-200 shadow-md hover:shadow-lg" data-composer-id="${composer.id}">
                                         Similar
                                     </button>
                                     <button class="play-btn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105" data-track="${composer.trackUrl}">
                                         ▶ Play
                                     </button>
-                                    <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105">
+                                    <button class="bg-white hover:bg-gray-50 text-black px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg">
                                         Contact
                                     </button>
                                 </div>
@@ -1055,13 +1100,13 @@
                                             <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">${track.mood}</span>
                                         </div>
                                         <div class="flex space-x-2">
-                                            <button class="similarity-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs font-medium transition-all duration-200" data-composer-id="${track.composerId}">
+                                            <button class="similarity-btn bg-white hover:bg-gray-50 text-black px-2 py-1 rounded text-xs font-medium transition-all duration-200 shadow-md hover:shadow-lg" data-composer-id="${track.composerId}">
                                                 Similar
                                             </button>
                                             <button class="play-btn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105" data-track="${track.trackUrl}">
                                                 ▶ Play
                                             </button>
-                                            <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105">
+                                            <button class="bg-white hover:bg-gray-50 text-black px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg">
                                                 Contact
                                             </button>
                                         </div>
@@ -1144,7 +1189,7 @@
                 </div>
                 
                 <div class="text-center mt-8">
-                    <button id="newSearchBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors duration-200">
+                    <button id="newSearchBtn" class="bg-white hover:bg-gray-50 text-black px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-lg hover:shadow-xl">
                         New Search
                     </button>
                 </div>
