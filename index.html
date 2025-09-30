@@ -128,7 +128,7 @@
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            z-index: 10;
+            z-index: 1000;
             min-width: 200px;
             max-height: 300px;
             overflow-y: auto;
@@ -292,8 +292,6 @@
     </style>
 </head>
 <body class="bg-white min-h-screen">
-    <!-- Header with gradient -->
-    <div class="gradient-header h-2 w-full"></div>
     
     <!-- Main container -->
     <div class="container mx-auto px-4 py-6 max-w-4xl">
@@ -305,39 +303,39 @@
         <!-- Side buttons -->
         <div class="flex justify-between items-start mb-12">
             <!-- History button -->
-            <button id="historyBtn" class="bg-white hover:bg-gray-50 text-black px-6 py-3 rounded-lg transition-all duration-200 font-medium shadow-lg hover:shadow-xl">
+            <button id="historyBtn" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-black px-4 py-2 rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg backdrop-blur-sm">
                 History
             </button>
             
             <!-- Filters button -->
-            <button id="filtersBtn" class="bg-white hover:bg-gray-50 text-black px-6 py-3 rounded-lg transition-all duration-200 font-medium shadow-lg hover:shadow-xl">
+            <button id="filtersBtn" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-black px-4 py-2 rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg backdrop-blur-sm">
                 Filters
             </button>
         </div>
         
-        <!-- Main input area -->
+        <!-- Main input area - Apple-like minimal design -->
         <div class="text-center">
-            <!-- Primary URL input - more prominent -->
-            <div class="mb-6">
-                <input type="text" id="urlInput" class="w-full max-w-2xl mx-auto p-6 text-lg border-2 border-gray-200 rounded-2xl text-center text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-red-100 focus:border-red-300 transition-all duration-200" placeholder="Paste track URL (Spotify, YouTube, SoundCloud) or drag audio file here...">
+            <!-- Primary URL input - clean and minimal -->
+            <div class="mb-8">
+                <input type="text" id="urlInput" class="w-full max-w-xl mx-auto p-4 text-lg border-0 rounded-xl text-center text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-0 transition-all duration-200 bg-white bg-opacity-90 backdrop-blur-sm shadow-lg" placeholder="Paste track URL or drag audio file here">
                 <input type="file" id="fileInput" class="file-input-hidden" accept=".mp3,.wav,.aiff,.flac,audio/*">
             </div>
             
-            <!-- Get shortlist button - more prominent -->
-            <button id="getShortlistBtn" class="bg-white hover:bg-gray-50 text-black px-16 py-5 rounded-2xl text-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+            <!-- Get shortlist button - prominent and clean -->
+            <button id="getShortlistBtn" class="bg-black hover:bg-gray-800 text-white px-16 py-4 rounded-xl text-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
                 Get Shortlist
             </button>
             
-            <!-- Quick upload option -->
-            <div class="mt-4">
-                <button id="uploadBtn" class="text-gray-800 hover:text-black text-sm underline transition-colors duration-200 font-medium">
+            <!-- Quick upload option - subtle -->
+            <div class="mt-6">
+                <button id="uploadBtn" class="text-gray-600 hover:text-gray-800 text-sm transition-colors duration-200 font-medium bg-transparent border-none">
                     or upload audio file
                 </button>
             </div>
             
             <!-- Quick demo options -->
             <div class="mt-8 text-center">
-                <p class="text-sm text-gray-800 mb-3 font-medium">Quick start:</p>
+                <p class="text-sm text-black mb-3 font-medium">Quick start:</p>
                 <div class="flex justify-center space-x-2 flex-wrap gap-2">
                     <button id="demoSpotify" class="bg-white hover:bg-gray-50 text-black px-3 py-1 rounded-full text-xs transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg">
                         Spotify
@@ -349,7 +347,7 @@
                         File
                     </button>
                 </div>
-                <p class="text-xs text-gray-700 mt-2 font-medium">Press Enter to search • Esc to clear • ⌘K to focus</p>
+                <p class="text-xs text-black mt-2 font-medium">Press Enter to search • Esc to clear • ⌘K to focus</p>
             </div>
         </div>
     </div>
@@ -457,7 +455,7 @@
             </div>
             
             <!-- Apply Filters Button -->
-            <button id="applyFilters" class="w-full bg-white hover:bg-gray-50 text-black py-3 rounded-lg font-medium transition-colors duration-200 shadow-lg hover:shadow-xl">
+            <button id="applyFilters" class="w-full bg-white bg-opacity-20 hover:bg-opacity-30 text-black py-3 rounded-lg font-medium transition-colors duration-200 shadow-md hover:shadow-lg backdrop-blur-sm">
                 Apply Filters
             </button>
         </div>
@@ -625,7 +623,7 @@
             5: { x: 0.85, y: 0.15, genre: 'hiphop' }      // Daniel Park - Hip-Hop/R&B
         };
         
-        // Mock composer database
+        // Mock composer database with detailed AI tagging scores
         const mockComposers = [
             {
                 id: 1,
@@ -637,9 +635,16 @@
                 matchScore: 0.94,
                 trackTitle: "Digital Dreams",
                 trackUrl: "https://open.spotify.com/track/example1",
-                tags: { electronic: 0.89, ambient: 0.76, cinematic: 0.82, energetic: 0.91 },
+                tags: { 
+                    electronic: 0.89, ambient: 0.76, cinematic: 0.82, energetic: 0.91,
+                    synthesizer: 0.85, drums: 0.78, strings: 0.72, atmospheric: 0.88,
+                    modern: 0.91, driving: 0.84, ethereal: 0.69
+                },
                 experience: "5+ years in film scoring",
-                location: "Los Angeles, CA"
+                location: "Los Angeles, CA",
+                contact: "lucas@example.com",
+                portfolio: "https://lucaschen.com",
+                availability: "Available for projects"
             },
             {
                 id: 2,
@@ -651,9 +656,16 @@
                 matchScore: 0.87,
                 trackTitle: "Midnight Reflections",
                 trackUrl: "https://open.spotify.com/track/example2",
-                tags: { rock: 0.85, alternative: 0.78, indie: 0.72, melancholic: 0.88 },
+                tags: { 
+                    rock: 0.85, alternative: 0.78, indie: 0.72, melancholic: 0.88,
+                    guitar: 0.92, piano: 0.81, vocals: 0.76, emotional: 0.89,
+                    raw: 0.84, intimate: 0.87, contemplative: 0.91
+                },
                 experience: "3+ years in commercial music",
-                location: "Brooklyn, NY"
+                location: "Brooklyn, NY",
+                contact: "sophie@example.com",
+                portfolio: "https://sophiemartinez.com",
+                availability: "Available for projects"
             },
             {
                 id: 3,
@@ -665,9 +677,16 @@
                 matchScore: 0.82,
                 trackTitle: "Urban Jazzscape",
                 trackUrl: "https://open.spotify.com/track/example3",
-                tags: { jazz: 0.91, fusion: 0.74, experimental: 0.68, uplifting: 0.83 },
+                tags: { 
+                    jazz: 0.91, fusion: 0.74, experimental: 0.68, uplifting: 0.83,
+                    saxophone: 0.88, piano: 0.85, bass: 0.79, improvisation: 0.92,
+                    urban: 0.76, contemporary: 0.81, sophisticated: 0.87
+                },
                 experience: "8+ years in jazz composition",
-                location: "Chicago, IL"
+                location: "Chicago, IL",
+                contact: "james@example.com",
+                portfolio: "https://jamesthompson.com",
+                availability: "Available for projects"
             },
             {
                 id: 4,
@@ -679,9 +698,16 @@
                 matchScore: 0.79,
                 trackTitle: "Symphony of Light",
                 trackUrl: "https://open.spotify.com/track/example4",
-                tags: { classical: 0.88, orchestral: 0.85, minimalist: 0.71, calm: 0.92 },
+                tags: { 
+                    classical: 0.88, orchestral: 0.85, minimalist: 0.71, calm: 0.92,
+                    strings: 0.94, piano: 0.89, woodwinds: 0.82, ethereal: 0.86,
+                    elegant: 0.91, timeless: 0.88, meditative: 0.84
+                },
                 experience: "10+ years in classical composition",
-                location: "Vienna, Austria"
+                location: "Vienna, Austria",
+                contact: "anna@example.com",
+                portfolio: "https://annakowalski.com",
+                availability: "Available for projects"
             },
             {
                 id: 5,
@@ -693,9 +719,16 @@
                 matchScore: 0.76,
                 trackTitle: "City Pulse",
                 trackUrl: "https://open.spotify.com/track/example5",
-                tags: { hiphop: 0.82, rnb: 0.75, pop: 0.69, energetic: 0.87 },
+                tags: { 
+                    hiphop: 0.82, rnb: 0.75, pop: 0.69, energetic: 0.87,
+                    drums: 0.91, bass: 0.88, synthesizer: 0.79, urban: 0.85,
+                    contemporary: 0.83, dynamic: 0.89, street: 0.76
+                },
                 experience: "4+ years in urban music production",
-                location: "Atlanta, GA"
+                location: "Atlanta, GA",
+                contact: "daniel@example.com",
+                portfolio: "https://danielpark.com",
+                availability: "Available for projects"
             }
         ];
         
@@ -952,22 +985,44 @@
             closePanel(filtersPanel, overlay);
         });
         
-        // Loading state
+        // Enhanced loading state with AI analysis steps
         function showLoadingState() {
             getShortlistBtn.classList.add('loading');
             getShortlistBtn.disabled = true;
             
-            // Show loading message
+            // Show detailed loading message with steps
             const loadingDiv = document.createElement('div');
             loadingDiv.id = 'loadingMessage';
-            loadingDiv.className = 'text-center mt-4 text-gray-600';
+            loadingDiv.className = 'text-center mt-6 max-w-2xl mx-auto';
             loadingDiv.innerHTML = `
-                <div class="flex items-center justify-center space-x-2">
-                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-red-500"></div>
-                    <span>AI is analyzing your track...</span>
-                </div>
-                <div class="mt-2 text-sm text-gray-500">
-                    Extracting audio features, matching composers, and generating shortlist
+                <div class="bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg p-6 backdrop-blur-sm">
+                    <div class="flex items-center justify-center space-x-3 mb-4">
+                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-red-500"></div>
+                        <span class="text-lg font-medium text-black">AI Analysis in Progress</span>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm text-black">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span>Extracting audio features and analyzing spectral content</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" style="animation-delay: 0.5s"></div>
+                            <span>Running tagging model across 400+ musical attributes</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style="animation-delay: 1s"></div>
+                            <span>Matching against composer database with confidence scores</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-purple-500 rounded-full animate-pulse" style="animation-delay: 1.5s"></div>
+                            <span>Generating ranked shortlist based on similarity</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-xs text-black opacity-75">
+                        This process typically takes 2-5 seconds depending on track complexity
+                    </div>
                 </div>
             `;
             getShortlistBtn.parentNode.appendChild(loadingDiv);
@@ -990,8 +1045,12 @@
             
             resultsContainer.innerHTML = `
                 <div class="text-center mb-8">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-2">Composer Shortlist</h2>
-                    <p class="text-gray-600">AI-matched composers ranked by similarity to your reference track</p>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-2">AI-Generated Composer Shortlist</h2>
+                    <p class="text-gray-600 mb-4">Composers ranked by AI analysis of musical similarity, style, and emotion</p>
+                    <div class="inline-flex items-center space-x-2 bg-white bg-opacity-20 rounded-full px-4 py-2 text-sm text-gray-700">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span>Powered by 400+ musical attribute analysis</span>
+                    </div>
                     
                     <!-- View Toggle Options -->
                     <div class="mt-6 flex items-center justify-center space-x-6">
@@ -1010,54 +1069,86 @@
                 <!-- Composer View -->
                 <div id="composerView" class="space-y-3">
                     ${mockComposers.map(composer => `
-                        <div class="composer-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200">
-                            <div class="flex items-center space-x-3">
+                        <div class="composer-card bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg p-4 hover:shadow-md transition-all duration-200 backdrop-blur-sm">
+                            <div class="flex items-center space-x-4">
                                 <img src="${composer.avatar}" alt="${composer.name}" class="w-10 h-10 rounded-full object-cover">
                                 <div class="flex-1">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <h3 class="text-md font-semibold text-gray-800">${composer.name}</h3>
-                                            <p class="text-xs text-gray-500">${composer.experience} • ${composer.location}</p>
+                                            <h3 class="text-md font-semibold text-black">${composer.name}</h3>
+                                            <p class="text-sm text-black">${composer.trackTitle}</p>
                                         </div>
-                                        <div class="flex items-center space-x-2">
-                                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="text-sm text-black">${composer.genres[0]}</span>
+                                            <span class="bg-white bg-opacity-30 text-black px-2 py-1 rounded-full text-xs font-medium">
                                                 ${Math.round(composer.matchScore * 100)}%
                                             </span>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button class="similarity-btn bg-white hover:bg-gray-50 text-black px-2 py-1 rounded text-xs font-medium transition-all duration-200 shadow-md hover:shadow-lg" data-composer-id="${composer.id}">
-                                        Similar
-                                    </button>
-                                    <button class="play-btn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105" data-track="${composer.trackUrl}">
-                                        ▶ Play
-                                    </button>
-                                    <button class="bg-white hover:bg-gray-50 text-black px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg">
-                                        Contact
-                                    </button>
+                                    <div class="flex items-center justify-between mt-2">
+                                        <div class="flex space-x-2">
+                                            <span class="bg-white bg-opacity-30 text-black px-2 py-1 rounded text-xs">${composer.genres[0]}</span>
+                                            <span class="bg-white bg-opacity-30 text-black px-2 py-1 rounded text-xs">${composer.mood}</span>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button class="similarity-btn bg-white bg-opacity-20 hover:bg-opacity-30 text-black px-2 py-1 rounded text-xs font-medium transition-all duration-200 shadow-md hover:shadow-lg backdrop-blur-sm" data-composer-id="${composer.id}">
+                                                Similar
+                                            </button>
+                                            <button class="play-btn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105" data-track="${composer.trackUrl}">
+                                                ▶ Play
+                                            </button>
+                                            <button class="bg-white bg-opacity-20 hover:bg-opacity-30 text-black px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg backdrop-blur-sm">
+                                                Contact
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             
-                            <!-- Hover details -->
-                            <div class="composer-details mt-3 pt-3 border-t border-gray-100">
-                                <div class="flex flex-wrap gap-1 mb-2">
-                                    ${composer.genres.map(genre => `
-                                        <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">${genre}</span>
-                                    `).join('')}
-                                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">${composer.mood}</span>
+                            <!-- Composer details that appear on hover -->
+                            <div class="composer-details mt-3 pt-3 border-t border-white border-opacity-20">
+                                <div class="grid grid-cols-2 gap-4 text-xs mb-3">
+                                    <div>
+                                        <span class="text-black font-medium">Experience:</span>
+                                        <span class="text-black ml-1">${composer.experience}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-black font-medium">Location:</span>
+                                        <span class="text-black ml-1">${composer.location}</span>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <span class="text-black font-medium">Instruments:</span>
+                                        <span class="text-black ml-1">${composer.instruments.join(', ')}</span>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <span class="text-black font-medium">Availability:</span>
+                                        <span class="text-black ml-1">${composer.availability}</span>
+                                    </div>
                                 </div>
-                                <div class="text-xs text-gray-500 mb-2">
-                                    <span>🎵 ${composer.instruments.join(', ')}</span>
+                                
+                                <!-- AI Confidence Scores for Transparency -->
+                                <div class="mt-3 pt-3 border-t border-white border-opacity-10">
+                                    <div class="text-xs text-black font-medium mb-2">AI Analysis Confidence Scores:</div>
+                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                        ${Object.entries(composer.tags)
+                                            .filter(([key, value]) => value > 0.7)
+                                            .sort(([,a], [,b]) => b - a)
+                                            .slice(0, 8)
+                                            .map(([tag, score]) => `
+                                                <div class="flex justify-between items-center">
+                                                    <span class="text-black capitalize">${tag}:</span>
+                                                    <span class="text-black font-mono">${(score * 100).toFixed(0)}%</span>
+                                                </div>
+                                            `).join('')}
+                                    </div>
                                 </div>
-                                <div class="grid grid-cols-2 gap-1 text-xs">
-                                    <h5 class="text-xs font-medium text-gray-600 mb-1 col-span-2">AI Analysis:</h5>
-                                    ${Object.entries(composer.tags).map(([tag, score]) => `
-                                        <div class="flex justify-between">
-                                            <span class="text-gray-500">${tag}:</span>
-                                            <span class="text-gray-700">${Math.round(score * 100)}%</span>
-                                        </div>
-                                    `).join('')}
+                                
+                                <!-- Contact Information -->
+                                <div class="mt-3 pt-3 border-t border-white border-opacity-10">
+                                    <div class="flex space-x-3 text-xs">
+                                        <a href="mailto:${composer.contact}" class="text-blue-600 hover:text-blue-800 underline">Email</a>
+                                        <a href="${composer.portfolio}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">Portfolio</a>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -1078,35 +1169,35 @@
                 <!-- Track View -->
                 <div id="trackView" class="space-y-3 hidden">
                     ${mockTracks.sort((a, b) => b.matchScore - a.matchScore).map(track => `
-                        <div class="track-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200">
+                        <div class="track-card bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg p-4 hover:shadow-md transition-all duration-200 backdrop-blur-sm">
                             <div class="flex items-center space-x-4">
                                 <img src="${track.avatar}" alt="${track.composer}" class="w-10 h-10 rounded-full object-cover">
                                 <div class="flex-1">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <h3 class="text-md font-semibold text-gray-800">${track.title}</h3>
-                                            <p class="text-sm text-gray-500">by ${track.composer}</p>
+                                            <h3 class="text-md font-semibold text-black">${track.title}</h3>
+                                            <p class="text-sm text-black">by ${track.composer}</p>
                                         </div>
                                         <div class="flex items-center space-x-3">
-                                            <span class="text-sm text-gray-400">${track.duration}</span>
-                                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+                                            <span class="text-sm text-black">${track.duration}</span>
+                                            <span class="bg-white bg-opacity-30 text-black px-2 py-1 rounded-full text-xs font-medium">
                                                 ${Math.round(track.matchScore * 100)}%
                                             </span>
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-between mt-2">
                                         <div class="flex space-x-2">
-                                            <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">${track.genre}</span>
-                                            <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">${track.mood}</span>
+                                            <span class="bg-white bg-opacity-30 text-black px-2 py-1 rounded text-xs">${track.genre}</span>
+                                            <span class="bg-white bg-opacity-30 text-black px-2 py-1 rounded text-xs">${track.mood}</span>
                                         </div>
                                         <div class="flex space-x-2">
-                                            <button class="similarity-btn bg-white hover:bg-gray-50 text-black px-2 py-1 rounded text-xs font-medium transition-all duration-200 shadow-md hover:shadow-lg" data-composer-id="${track.composerId}">
+                                            <button class="similarity-btn bg-white bg-opacity-20 hover:bg-opacity-30 text-black px-2 py-1 rounded text-xs font-medium transition-all duration-200 shadow-md hover:shadow-lg backdrop-blur-sm" data-composer-id="${track.composerId}">
                                                 Similar
                                             </button>
                                             <button class="play-btn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105" data-track="${track.trackUrl}">
                                                 ▶ Play
                                             </button>
-                                            <button class="bg-white hover:bg-gray-50 text-black px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg">
+                                            <button class="bg-white bg-opacity-20 hover:bg-opacity-30 text-black px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg backdrop-blur-sm">
                                                 Contact
                                             </button>
                                         </div>
@@ -1189,7 +1280,7 @@
                 </div>
                 
                 <div class="text-center mt-8">
-                    <button id="newSearchBtn" class="bg-white hover:bg-gray-50 text-black px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-lg hover:shadow-xl">
+                    <button id="newSearchBtn" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-black px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-md hover:shadow-lg backdrop-blur-sm">
                         New Search
                     </button>
                 </div>
