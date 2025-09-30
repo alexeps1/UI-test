@@ -36,6 +36,82 @@
         .drag-over {
             border-color: #ff6b35;
             background-color: #fef2f2;
+            transform: scale(1.02);
+        }
+        
+        .input-valid {
+            border-color: #10b981;
+            background-color: #f0fdf4;
+        }
+        
+        .input-invalid {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .composer-card {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .composer-card:hover .composer-details {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .composer-details {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .similarity-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            z-index: 10;
+            min-width: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            pointer-events: none;
+        }
+        
+        .similarity-menu.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        
+        .similarity-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f3f4f6;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .similarity-item:hover {
+            background-color: #f9fafb;
+        }
+        
+        .similarity-item:last-child {
+            border-bottom: none;
         }
         
         .file-input-hidden {
@@ -74,7 +150,7 @@
     <div class="gradient-header h-2 w-full"></div>
     
     <!-- Main container -->
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="container mx-auto px-4 py-6 max-w-4xl">
         <!-- Logo -->
         <div class="text-center mb-16">
             <h1 class="text-4xl font-bold text-black tracking-tight">MASSIVEMUSIC</h1>
@@ -95,42 +171,39 @@
         
         <!-- Main input area -->
         <div class="text-center">
-            <!-- Input field -->
-            <div class="mb-8">
-                <div id="dropZone" class="bg-white border-2 border-dashed border-gray-300 rounded-xl p-12 max-w-2xl mx-auto cursor-pointer hover:border-gray-400 transition-colors duration-200">
-                    <div class="text-center">
-                        <div class="text-gray-400 text-lg mb-4">
-                            <svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                            </svg>
-                        </div>
-                        <p class="text-gray-500 text-lg">Paste track link or upload file</p>
-                        <p class="text-gray-400 text-sm mt-2">Supports Spotify, YouTube, SoundCloud, MP3, WAV, AIFF, FLAC</p>
-                    </div>
-                    <input type="text" id="urlInput" class="w-full p-4 border border-gray-300 rounded-lg mt-4 text-center text-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Or paste a track URL here...">
-                    <input type="file" id="fileInput" class="file-input-hidden" accept=".mp3,.wav,.aiff,.flac,audio/*">
-                </div>
+            <!-- Primary URL input - more prominent -->
+            <div class="mb-6">
+                <input type="text" id="urlInput" class="w-full max-w-2xl mx-auto p-6 text-lg border-2 border-gray-200 rounded-2xl text-center text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-red-100 focus:border-red-300 transition-all duration-200" placeholder="Paste track URL (Spotify, YouTube, SoundCloud) or drag audio file here...">
+                <input type="file" id="fileInput" class="file-input-hidden" accept=".mp3,.wav,.aiff,.flac,audio/*">
             </div>
             
-            <!-- Get shortlist button -->
-            <button id="getShortlistBtn" class="bg-black hover:bg-gray-800 text-white px-12 py-4 rounded-lg text-lg font-medium transition-colors duration-200">
-                Get shortlist
+            <!-- Get shortlist button - more prominent -->
+            <button id="getShortlistBtn" class="bg-black hover:bg-gray-800 text-white px-16 py-5 rounded-2xl text-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                Get Shortlist
             </button>
             
-            <!-- Demo buttons for testing -->
-            <div class="mt-6 text-center">
-                <p class="text-sm text-gray-500 mb-3">Demo: Try these sample inputs</p>
-                <div class="flex justify-center space-x-3">
-                    <button id="demoSpotify" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm transition-colors duration-200">
-                        Demo Spotify
+            <!-- Quick upload option -->
+            <div class="mt-4">
+                <button id="uploadBtn" class="text-gray-500 hover:text-gray-700 text-sm underline transition-colors duration-200">
+                    or upload audio file
+                </button>
+            </div>
+            
+            <!-- Quick demo options -->
+            <div class="mt-8 text-center">
+                <p class="text-sm text-gray-400 mb-3">Quick start:</p>
+                <div class="flex justify-center space-x-2 flex-wrap gap-2">
+                    <button id="demoSpotify" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-full text-xs transition-all duration-200 transform hover:scale-105">
+                        Spotify
                     </button>
-                    <button id="demoYouTube" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm transition-colors duration-200">
-                        Demo YouTube
+                    <button id="demoYouTube" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full text-xs transition-all duration-200 transform hover:scale-105">
+                        YouTube
                     </button>
-                    <button id="demoFile" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm transition-colors duration-200">
-                        Demo File
+                    <button id="demoFile" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-full text-xs transition-all duration-200 transform hover:scale-105">
+                        File
                     </button>
                 </div>
+                <p class="text-xs text-gray-300 mt-2">Press Enter to search • Esc to clear • ⌘K to focus</p>
             </div>
         </div>
     </div>
@@ -256,10 +329,10 @@
         const closeHistory = document.getElementById('closeHistory');
         const closeFilters = document.getElementById('closeFilters');
         const overlay = document.getElementById('overlay');
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
         const urlInput = document.getElementById('urlInput');
+        const fileInput = document.getElementById('fileInput');
         const getShortlistBtn = document.getElementById('getShortlistBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
         const historyList = document.getElementById('historyList');
         const applyFilters = document.getElementById('applyFilters');
         const demoSpotify = document.getElementById('demoSpotify');
@@ -272,6 +345,35 @@
             { track: "Imagine", composer: "John Lennon", url: "https://open.spotify.com/track/7pKfPomrE7XiB8qQ4FSkYc" },
             { track: "Hotel California", composer: "Eagles", url: "https://open.spotify.com/track/40riOy7x9W7GXjyGp4pjAv" }
         ];
+        
+        // Mock similar composers data
+        const similarComposers = {
+            1: [
+                { name: "Alex Rivera", match: 0.89, genre: "Electronic" },
+                { name: "Maya Chen", match: 0.85, genre: "Ambient" },
+                { name: "David Kim", match: 0.82, genre: "Cinematic" }
+            ],
+            2: [
+                { name: "Emma Wilson", match: 0.91, genre: "Rock" },
+                { name: "Jake Thompson", match: 0.87, genre: "Alternative" },
+                { name: "Sarah Davis", match: 0.84, genre: "Indie" }
+            ],
+            3: [
+                { name: "Marcus Johnson", match: 0.88, genre: "Jazz" },
+                { name: "Lisa Park", match: 0.85, genre: "Fusion" },
+                { name: "Tom Anderson", match: 0.81, genre: "Experimental" }
+            ],
+            4: [
+                { name: "Elena Volkov", match: 0.92, genre: "Classical" },
+                { name: "Robert Chen", match: 0.89, genre: "Orchestral" },
+                { name: "Isabella Rose", match: 0.86, genre: "Minimalist" }
+            ],
+            5: [
+                { name: "Tyler Brown", match: 0.90, genre: "Hip-Hop" },
+                { name: "Jordan Lee", match: 0.87, genre: "R&B" },
+                { name: "Casey White", match: 0.83, genre: "Pop" }
+            ]
+        };
         
         // Mock composer database
         const mockComposers = [
@@ -386,7 +488,7 @@
         });
         
         // File upload and drag-and-drop
-        dropZone.addEventListener('click', () => {
+        uploadBtn.addEventListener('click', () => {
             fileInput.click();
         });
         
@@ -397,19 +499,20 @@
             }
         });
         
-        dropZone.addEventListener('dragover', (e) => {
+        // Make the entire input area draggable
+        urlInput.addEventListener('dragover', (e) => {
             e.preventDefault();
-            dropZone.classList.add('drag-over');
+            urlInput.classList.add('drag-over');
         });
         
-        dropZone.addEventListener('dragleave', (e) => {
+        urlInput.addEventListener('dragleave', (e) => {
             e.preventDefault();
-            dropZone.classList.remove('drag-over');
+            urlInput.classList.remove('drag-over');
         });
         
-        dropZone.addEventListener('drop', (e) => {
+        urlInput.addEventListener('drop', (e) => {
             e.preventDefault();
-            dropZone.classList.remove('drag-over');
+            urlInput.classList.remove('drag-over');
             
             const files = e.dataTransfer.files;
             if (files.length > 0) {
@@ -417,7 +520,7 @@
                 if (file.type.startsWith('audio/') || file.name.match(/\.(mp3|wav|aiff|flac)$/i)) {
                     handleFileUpload(file);
                 } else {
-                    alert('Please upload an audio file (MP3, WAV, AIFF, FLAC)');
+                    showNotification('Please upload an audio file (MP3, WAV, AIFF, FLAC)', 'error');
                 }
             }
         });
@@ -426,28 +529,99 @@
             // In a real app, you would upload the file to a server
             console.log('File uploaded:', file.name);
             urlInput.value = `Uploaded: ${file.name}`;
-            urlInput.style.color = '#059669';
+            urlInput.classList.remove('input-invalid');
+            urlInput.classList.add('input-valid');
+            showNotification(`File uploaded: ${file.name}`, 'success');
         }
         
-        // URL input handling
+        // URL input handling with instant validation
         urlInput.addEventListener('input', (e) => {
-            const url = e.target.value;
-            if (url && (url.includes('spotify.com') || url.includes('youtube.com') || url.includes('soundcloud.com'))) {
-                urlInput.style.color = '#059669';
-            } else if (url) {
-                urlInput.style.color = '#dc2626';
-            } else {
-                urlInput.style.color = '#6b7280';
+            const url = e.target.value.trim();
+            urlInput.classList.remove('input-valid', 'input-invalid');
+            
+            if (url === '') {
+                return;
+            }
+            
+            // Check if it's a valid music platform URL
+            const isValidUrl = url.includes('spotify.com') || 
+                             url.includes('youtube.com') || 
+                             url.includes('youtu.be') ||
+                             url.includes('soundcloud.com') ||
+                             url.includes('bandcamp.com') ||
+                             url.includes('apple.com/music') ||
+                             url.startsWith('Uploaded:');
+            
+            if (isValidUrl) {
+                urlInput.classList.add('input-valid');
+                getShortlistBtn.classList.add('pulse-animation');
+            } else if (url.length > 10) {
+                urlInput.classList.add('input-invalid');
+                getShortlistBtn.classList.remove('pulse-animation');
             }
         });
         
+        // Auto-focus on page load for faster input
+        window.addEventListener('load', () => {
+            urlInput.focus();
+        });
+        
+        // Keyboard shortcuts for faster interaction
+        document.addEventListener('keydown', (e) => {
+            // Enter key to get shortlist
+            if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) {
+                if (document.activeElement === urlInput) {
+                    e.preventDefault();
+                    getShortlistBtn.click();
+                }
+            }
+            
+            // Escape key to clear input
+            if (e.key === 'Escape') {
+                urlInput.value = '';
+                urlInput.classList.remove('input-valid', 'input-invalid');
+                getShortlistBtn.classList.remove('pulse-animation');
+                urlInput.focus();
+            }
+            
+            // Ctrl/Cmd + K to focus input
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                urlInput.focus();
+                urlInput.select();
+            }
+        });
+        
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-green-500' : 
+                           type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+            
+            notification.className = `fixed top-4 right-4 ${bgColor} text-white px-4 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Auto remove
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
         // Get shortlist button
         getShortlistBtn.addEventListener('click', () => {
-            const url = urlInput.value;
+            const url = urlInput.value.trim();
             const file = fileInput.files[0];
             
             if (!url && !file) {
-                alert('Please paste a track URL or upload a file');
+                showNotification('Please paste a track URL or upload a file', 'error');
+                urlInput.focus();
                 return;
             }
             
@@ -461,10 +635,10 @@
             // Show loading state
             showLoadingState();
             
-            // Simulate AI analysis with realistic timing
+            // Simulate AI analysis with faster timing for better UX
             setTimeout(() => {
                 showResults();
-            }, 3000);
+            }, 2000);
         });
         
         function extractTrackName(url) {
@@ -572,59 +746,68 @@
                 
                 <div class="space-y-4">
                     ${mockComposers.map(composer => `
-                        <div class="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow duration-200">
-                            <div class="flex items-start space-x-4">
-                                <img src="${composer.avatar}" alt="${composer.name}" class="w-16 h-16 rounded-full object-cover">
+                        <div class="composer-card bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200">
+                            <div class="flex items-center space-x-4">
+                                <img src="${composer.avatar}" alt="${composer.name}" class="w-12 h-12 rounded-full object-cover">
                                 <div class="flex-1">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <h3 class="text-lg font-semibold text-gray-800">${composer.name}</h3>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-gray-800">${composer.name}</h3>
+                                            <p class="text-sm text-gray-500">${composer.trackTitle}</p>
+                                        </div>
                                         <div class="flex items-center space-x-2">
-                                            <span class="text-sm text-gray-500">Match Score:</span>
                                             <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm font-medium">
                                                 ${Math.round(composer.matchScore * 100)}%
                                             </span>
                                         </div>
                                     </div>
-                                    
-                                    <div class="mb-3">
-                                        <h4 class="text-md font-medium text-gray-700 mb-1">${composer.trackTitle}</h4>
-                                        <p class="text-sm text-gray-500">${composer.experience} • ${composer.location}</p>
-                                    </div>
-                                    
-                                    <div class="flex flex-wrap gap-2 mb-3">
-                                        ${composer.genres.map(genre => `
-                                            <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">${genre}</span>
-                                        `).join('')}
-                                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">${composer.mood}</span>
-                                    </div>
-                                    
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex space-x-4 text-sm text-gray-500">
-                                            <span>🎵 ${composer.instruments.join(', ')}</span>
-                                        </div>
-                                        <div class="flex space-x-2">
-                                            <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm transition-colors duration-200">
-                                                Preview
-                                            </button>
-                                            <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors duration-200">
-                                                Contact
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- AI Analysis Breakdown -->
-                                    <div class="mt-4 pt-4 border-t border-gray-100">
-                                        <h5 class="text-sm font-medium text-gray-600 mb-2">AI Analysis Breakdown:</h5>
-                                        <div class="grid grid-cols-2 gap-2 text-xs">
-                                            ${Object.entries(composer.tags).map(([tag, score]) => `
-                                                <div class="flex justify-between">
-                                                    <span class="text-gray-500">${tag}:</span>
-                                                    <span class="text-gray-700">${Math.round(score * 100)}%</span>
-                                                </div>
-                                            `).join('')}
-                                        </div>
-                                    </div>
                                 </div>
+                                <div class="flex space-x-2">
+                                    <button class="similarity-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200" data-composer-id="${composer.id}">
+                                        Similar
+                                    </button>
+                                    <button class="play-btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105" data-track="${composer.trackUrl}">
+                                        ▶ Play
+                                    </button>
+                                    <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105">
+                                        Contact
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Hover details -->
+                            <div class="composer-details mt-4 pt-4 border-t border-gray-100">
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    ${composer.genres.map(genre => `
+                                        <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">${genre}</span>
+                                    `).join('')}
+                                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">${composer.mood}</span>
+                                </div>
+                                <div class="text-sm text-gray-500 mb-3">
+                                    <span>🎵 ${composer.instruments.join(', ')}</span>
+                                    <span class="ml-4">📍 ${composer.location}</span>
+                                    <span class="ml-4">💼 ${composer.experience}</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <h5 class="text-sm font-medium text-gray-600 mb-2 col-span-2">AI Analysis:</h5>
+                                    ${Object.entries(composer.tags).map(([tag, score]) => `
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-500">${tag}:</span>
+                                            <span class="text-gray-700">${Math.round(score * 100)}%</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            
+                            <!-- Similarity menu -->
+                            <div class="similarity-menu" id="similarity-${composer.id}">
+                                <div class="p-2 text-xs text-gray-500 border-b">Similar composers:</div>
+                                ${similarComposers[composer.id] ? similarComposers[composer.id].map(similar => `
+                                    <div class="similarity-item" data-composer="${similar.name}">
+                                        <div class="font-medium text-gray-800">${similar.name}</div>
+                                        <div class="text-xs text-gray-500">${similar.genre} • ${Math.round(similar.match * 100)}% match</div>
+                                    </div>
+                                `).join('') : '<div class="p-3 text-sm text-gray-500">No similar composers found</div>'}
                             </div>
                         </div>
                     `).join('')}
@@ -649,24 +832,119 @@
                 resultsContainer.remove();
                 urlInput.value = '';
                 fileInput.value = '';
-                urlInput.style.color = '#6b7280';
+                urlInput.classList.remove('input-valid', 'input-invalid');
+                getShortlistBtn.classList.remove('pulse-animation');
+                urlInput.focus();
+            });
+            
+            // Add play functionality
+            document.querySelectorAll('.play-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const trackUrl = e.target.getAttribute('data-track');
+                    playTrack(trackUrl, e.target);
+                });
+            });
+            
+            // Add similarity functionality
+            document.querySelectorAll('.similarity-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const composerId = e.target.getAttribute('data-composer-id');
+                    toggleSimilarityMenu(composerId, e.target);
+                });
+            });
+            
+            // Add similarity item click functionality
+            document.querySelectorAll('.similarity-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const composerName = e.currentTarget.getAttribute('data-composer');
+                    showNotification(`Searching for ${composerName}...`, 'info');
+                    // In a real app, this would trigger a new search for the similar composer
+                });
             });
         }
+        
+        // Play track functionality
+        function playTrack(trackUrl, button) {
+            // Stop any currently playing track
+            document.querySelectorAll('.play-btn').forEach(btn => {
+                if (btn !== button) {
+                    btn.textContent = '▶ Play';
+                    btn.classList.remove('bg-red-500');
+                    btn.classList.add('bg-green-500');
+                }
+            });
+            
+            // Toggle play/pause
+            if (button.textContent === '▶ Play') {
+                button.textContent = '⏸ Pause';
+                button.classList.remove('bg-green-500');
+                button.classList.add('bg-red-500');
+                showNotification('Playing track preview...', 'info');
+                
+                // In a real app, you would integrate with audio APIs
+                // For demo purposes, we'll simulate playback
+                setTimeout(() => {
+                    button.textContent = '▶ Play';
+                    button.classList.remove('bg-red-500');
+                    button.classList.add('bg-green-500');
+                }, 30000); // 30 second demo
+            } else {
+                button.textContent = '▶ Play';
+                button.classList.remove('bg-red-500');
+                button.classList.add('bg-green-500');
+                showNotification('Playback paused', 'info');
+            }
+        }
+        
+        // Similarity menu functionality
+        function toggleSimilarityMenu(composerId, button) {
+            // Close all other similarity menus
+            document.querySelectorAll('.similarity-menu').forEach(menu => {
+                if (menu.id !== `similarity-${composerId}`) {
+                    menu.classList.remove('active');
+                }
+            });
+            
+            // Toggle current menu
+            const menu = document.getElementById(`similarity-${composerId}`);
+            if (menu) {
+                menu.classList.toggle('active');
+            }
+        }
+        
+        // Close similarity menus when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.similarity-btn') && !e.target.closest('.similarity-menu')) {
+                document.querySelectorAll('.similarity-menu').forEach(menu => {
+                    menu.classList.remove('active');
+                });
+            }
+        });
         
         // Demo buttons
         demoSpotify.addEventListener('click', () => {
             urlInput.value = 'https://open.spotify.com/track/4u7EnebtmKWzUH433cf5Qv';
-            urlInput.style.color = '#059669';
+            urlInput.classList.remove('input-invalid');
+            urlInput.classList.add('input-valid');
+            getShortlistBtn.classList.add('pulse-animation');
+            urlInput.focus();
         });
         
         demoYouTube.addEventListener('click', () => {
             urlInput.value = 'https://youtube.com/watch?v=dQw4w9WgXcQ';
-            urlInput.style.color = '#059669';
+            urlInput.classList.remove('input-invalid');
+            urlInput.classList.add('input-valid');
+            getShortlistBtn.classList.add('pulse-animation');
+            urlInput.focus();
         });
         
         demoFile.addEventListener('click', () => {
             urlInput.value = 'Uploaded: demo-track.mp3';
-            urlInput.style.color = '#059669';
+            urlInput.classList.remove('input-invalid');
+            urlInput.classList.add('input-valid');
+            getShortlistBtn.classList.add('pulse-animation');
+            urlInput.focus();
         });
         
         // Initialize
