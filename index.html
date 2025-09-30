@@ -123,6 +123,98 @@
             transform: translateY(-1px);
         }
         
+        .view-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .view-btn.active {
+            background-color: #ef4444;
+            color: white;
+        }
+        
+        .view-btn:not(.active):hover {
+            background-color: #f3f4f6;
+        }
+        
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .composer-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .composer-dot:hover {
+            transform: scale(1.5);
+            z-index: 10;
+        }
+        
+        .composer-dot.electronic { background-color: #10b981; }
+        .composer-dot.rock { background-color: #f59e0b; }
+        .composer-dot.jazz { background-color: #8b5cf6; }
+        .composer-dot.classical { background-color: #3b82f6; }
+        .composer-dot.hiphop { background-color: #ef4444; }
+        
+        .composer-tooltip {
+            position: absolute;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 8px 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 20;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+        }
+        
+        .composer-tooltip.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .map-legend {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+            font-size: 12px;
+        }
+        
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
         .file-input-hidden {
             display: none;
         }
@@ -477,6 +569,15 @@
                 { name: "Jordan Lee", match: 0.87, genre: "R&B" },
                 { name: "Casey White", match: 0.83, genre: "Pop" }
             ]
+        };
+        
+        // Mock embedding coordinates (2D positions based on 400 tags)
+        const composerEmbeddings = {
+            1: { x: 0.15, y: 0.25, genre: 'electronic' }, // Lucas Chen - Electronic/Ambient
+            2: { x: 0.75, y: 0.35, genre: 'rock' },       // Sophie Martinez - Rock/Alternative
+            3: { x: 0.45, y: 0.65, genre: 'jazz' },       // James Thompson - Jazz/Fusion
+            4: { x: 0.25, y: 0.85, genre: 'classical' },  // Anna Kowalski - Classical/Orchestral
+            5: { x: 0.85, y: 0.15, genre: 'hiphop' }      // Daniel Park - Hip-Hop/R&B
         };
         
         // Mock composer database
@@ -847,14 +948,17 @@
                     <h2 class="text-2xl font-semibold text-gray-800 mb-2">Composer Shortlist</h2>
                     <p class="text-gray-600">AI-matched composers ranked by similarity to your reference track</p>
                     
-                    <!-- View Toggle Switch -->
-                    <div class="mt-6 flex items-center justify-center space-x-4">
-                        <span class="text-sm text-gray-600">Composers</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="viewToggle" class="sr-only peer">
-                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
-                        </label>
-                        <span class="text-sm text-gray-600">Tracks</span>
+                    <!-- View Toggle Options -->
+                    <div class="mt-6 flex items-center justify-center space-x-6">
+                        <button class="view-btn active" data-view="composers">
+                            <span class="text-sm font-medium text-gray-700">Composers</span>
+                        </button>
+                        <button class="view-btn" data-view="tracks">
+                            <span class="text-sm font-medium text-gray-600">Tracks</span>
+                        </button>
+                        <button class="view-btn" data-view="map">
+                            <span class="text-sm font-medium text-gray-600">Map</span>
+                        </button>
                     </div>
                 </div>
                 
@@ -979,6 +1083,66 @@
                     `).join('')}
                 </div>
                 
+                <!-- Map View -->
+                <div id="mapView" class="hidden">
+                    <div class="map-container" id="composerMap">
+                        <!-- Composers will be positioned here -->
+                        ${mockComposers.map(composer => {
+                            const embedding = composerEmbeddings[composer.id];
+                            const x = embedding.x * 100;
+                            const y = embedding.y * 100;
+                            return `
+                                <div class="composer-dot ${embedding.genre}" 
+                                     style="left: ${x}%; top: ${y}%;" 
+                                     data-composer-id="${composer.id}"
+                                     data-composer-name="${composer.name}"
+                                     data-match-score="${Math.round(composer.matchScore * 100)}"
+                                     data-genre="${composer.genres[0]}"
+                                     data-mood="${composer.mood}">
+                                </div>
+                            `;
+                        }).join('')}
+                        
+                        <!-- Map Legend -->
+                        <div class="map-legend">
+                            <div class="text-xs font-medium text-gray-700 mb-2">Genres</div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background-color: #10b981;"></div>
+                                <span>Electronic</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background-color: #f59e0b;"></div>
+                                <span>Rock</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background-color: #8b5cf6;"></div>
+                                <span>Jazz</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background-color: #3b82f6;"></div>
+                                <span>Classical</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background-color: #ef4444;"></div>
+                                <span>Hip-Hop</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Tooltip -->
+                        <div class="composer-tooltip" id="mapTooltip">
+                            <div class="font-medium text-gray-800" id="tooltipName"></div>
+                            <div class="text-xs text-gray-500" id="tooltipDetails"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <p class="text-sm text-gray-500">
+                            Composers are positioned based on their musical similarity. 
+                            <br>Hover over dots to see details, click to view composer info.
+                        </p>
+                    </div>
+                </div>
+                
                 <div class="text-center mt-8">
                     <button id="newSearchBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors duration-200">
                         New Search
@@ -1029,23 +1193,75 @@
                 });
             });
             
-            // Add view toggle functionality
-            const viewToggle = document.getElementById('viewToggle');
+            // Add view switching functionality
+            const viewButtons = document.querySelectorAll('.view-btn');
             const composerView = document.getElementById('composerView');
             const trackView = document.getElementById('trackView');
+            const mapView = document.getElementById('mapView');
             
-            viewToggle.addEventListener('change', (e) => {
-                if (e.target.checked) {
-                    // Switch to track view
+            viewButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const view = e.currentTarget.getAttribute('data-view');
+                    
+                    // Update active button
+                    viewButtons.forEach(b => b.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                    
+                    // Hide all views
                     composerView.classList.add('hidden');
-                    trackView.classList.remove('hidden');
-                    showNotification('Switched to track view', 'info');
-                } else {
-                    // Switch to composer view
                     trackView.classList.add('hidden');
-                    composerView.classList.remove('hidden');
-                    showNotification('Switched to composer view', 'info');
-                }
+                    mapView.classList.add('hidden');
+                    
+                    // Show selected view
+                    if (view === 'composers') {
+                        composerView.classList.remove('hidden');
+                        showNotification('Switched to composer view', 'info');
+                    } else if (view === 'tracks') {
+                        trackView.classList.remove('hidden');
+                        showNotification('Switched to track view', 'info');
+                    } else if (view === 'map') {
+                        mapView.classList.remove('hidden');
+                        showNotification('Switched to map view', 'info');
+                    }
+                });
+            });
+            
+            // Add map interactions
+            const composerDots = document.querySelectorAll('.composer-dot');
+            const tooltip = document.getElementById('mapTooltip');
+            
+            composerDots.forEach(dot => {
+                dot.addEventListener('mouseenter', (e) => {
+                    const name = e.target.getAttribute('data-composer-name');
+                    const matchScore = e.target.getAttribute('data-match-score');
+                    const genre = e.target.getAttribute('data-genre');
+                    const mood = e.target.getAttribute('data-mood');
+                    
+                    document.getElementById('tooltipName').textContent = name;
+                    document.getElementById('tooltipDetails').textContent = `${genre} • ${mood} • ${matchScore}% match`;
+                    
+                    // Position tooltip
+                    const rect = e.target.getBoundingClientRect();
+                    const mapRect = document.getElementById('composerMap').getBoundingClientRect();
+                    
+                    tooltip.style.left = (rect.left - mapRect.left + rect.width/2) + 'px';
+                    tooltip.style.top = (rect.top - mapRect.top - 40) + 'px';
+                    tooltip.classList.add('show');
+                });
+                
+                dot.addEventListener('mouseleave', () => {
+                    tooltip.classList.remove('show');
+                });
+                
+                dot.addEventListener('click', (e) => {
+                    const composerId = e.target.getAttribute('data-composer-id');
+                    const composer = mockComposers.find(c => c.id == composerId);
+                    
+                    if (composer) {
+                        showNotification(`Selected ${composer.name} - ${Math.round(composer.matchScore * 100)}% match`, 'success');
+                        // In a real app, this could open a detailed composer modal or switch to composer view
+                    }
+                });
             });
         }
         
