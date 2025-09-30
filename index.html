@@ -6,14 +6,13 @@
     <title>MassiveMusic - Get Shortlist</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
         
         .gradient-header {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 50%, #ffa8a8 100%);
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff8c42 100%);
         }
         
         .slide-in-left {
@@ -35,12 +34,38 @@
         }
         
         .drag-over {
-            border-color: #ff6b6b;
+            border-color: #ff6b35;
             background-color: #fef2f2;
         }
         
         .file-input-hidden {
             display: none;
+        }
+        
+        .loading {
+            position: relative;
+            color: transparent;
+        }
+        
+        .loading::after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -91,6 +116,22 @@
             <button id="getShortlistBtn" class="bg-black hover:bg-gray-800 text-white px-12 py-4 rounded-lg text-lg font-medium transition-colors duration-200">
                 Get shortlist
             </button>
+            
+            <!-- Demo buttons for testing -->
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-500 mb-3">Demo: Try these sample inputs</p>
+                <div class="flex justify-center space-x-3">
+                    <button id="demoSpotify" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm transition-colors duration-200">
+                        Demo Spotify
+                    </button>
+                    <button id="demoYouTube" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm transition-colors duration-200">
+                        Demo YouTube
+                    </button>
+                    <button id="demoFile" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm transition-colors duration-200">
+                        Demo File
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -221,12 +262,89 @@
         const getShortlistBtn = document.getElementById('getShortlistBtn');
         const historyList = document.getElementById('historyList');
         const applyFilters = document.getElementById('applyFilters');
+        const demoSpotify = document.getElementById('demoSpotify');
+        const demoYouTube = document.getElementById('demoYouTube');
+        const demoFile = document.getElementById('demoFile');
         
         // History data (in a real app, this would come from localStorage or API)
         let searchHistory = [
             { track: "Bohemian Rhapsody", composer: "Queen", url: "https://open.spotify.com/track/4u7EnebtmKWzUH433cf5Qv" },
             { track: "Imagine", composer: "John Lennon", url: "https://open.spotify.com/track/7pKfPomrE7XiB8qQ4FSkYc" },
             { track: "Hotel California", composer: "Eagles", url: "https://open.spotify.com/track/40riOy7x9W7GXjyGp4pjAv" }
+        ];
+        
+        // Mock composer database
+        const mockComposers = [
+            {
+                id: 1,
+                name: "Lucas Chen",
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+                genres: ["Electronic", "Ambient", "Cinematic"],
+                mood: "Energetic",
+                instruments: ["Synthesizer", "Drums", "Strings"],
+                matchScore: 0.94,
+                trackTitle: "Digital Dreams",
+                trackUrl: "https://open.spotify.com/track/example1",
+                tags: { electronic: 0.89, ambient: 0.76, cinematic: 0.82, energetic: 0.91 },
+                experience: "5+ years in film scoring",
+                location: "Los Angeles, CA"
+            },
+            {
+                id: 2,
+                name: "Sophie Martinez",
+                avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+                genres: ["Rock", "Alternative", "Indie"],
+                mood: "Melancholic",
+                instruments: ["Guitar", "Piano", "Vocals"],
+                matchScore: 0.87,
+                trackTitle: "Midnight Reflections",
+                trackUrl: "https://open.spotify.com/track/example2",
+                tags: { rock: 0.85, alternative: 0.78, indie: 0.72, melancholic: 0.88 },
+                experience: "3+ years in commercial music",
+                location: "Brooklyn, NY"
+            },
+            {
+                id: 3,
+                name: "James Thompson",
+                avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+                genres: ["Jazz", "Fusion", "Experimental"],
+                mood: "Uplifting",
+                instruments: ["Saxophone", "Piano", "Bass"],
+                matchScore: 0.82,
+                trackTitle: "Urban Jazzscape",
+                trackUrl: "https://open.spotify.com/track/example3",
+                tags: { jazz: 0.91, fusion: 0.74, experimental: 0.68, uplifting: 0.83 },
+                experience: "8+ years in jazz composition",
+                location: "Chicago, IL"
+            },
+            {
+                id: 4,
+                name: "Anna Kowalski",
+                avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+                genres: ["Classical", "Orchestral", "Minimalist"],
+                mood: "Calm",
+                instruments: ["Strings", "Piano", "Woodwinds"],
+                matchScore: 0.79,
+                trackTitle: "Symphony of Light",
+                trackUrl: "https://open.spotify.com/track/example4",
+                tags: { classical: 0.88, orchestral: 0.85, minimalist: 0.71, calm: 0.92 },
+                experience: "10+ years in classical composition",
+                location: "Vienna, Austria"
+            },
+            {
+                id: 5,
+                name: "Daniel Park",
+                avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+                genres: ["Hip-Hop", "R&B", "Pop"],
+                mood: "Energetic",
+                instruments: ["Drums", "Bass", "Synthesizer"],
+                matchScore: 0.76,
+                trackTitle: "City Pulse",
+                trackUrl: "https://open.spotify.com/track/example5",
+                tags: { hiphop: 0.82, rnb: 0.75, pop: 0.69, energetic: 0.87 },
+                experience: "4+ years in urban music production",
+                location: "Atlanta, GA"
+            }
         ];
         
         // Panel management
@@ -340,22 +458,26 @@
                 addToHistory(trackName, composer, url);
             }
             
-            // In a real app, this would make an API call
-            console.log('Getting shortlist for:', url || file.name);
-            alert('Shortlist generated! (This is a demo)');
+            // Show loading state
+            showLoadingState();
+            
+            // Simulate AI analysis with realistic timing
+            setTimeout(() => {
+                showResults();
+            }, 3000);
         });
         
         function extractTrackName(url) {
             // Simple extraction - in a real app, you'd use APIs
-            if (url.includes('spotify.com')) return 'Spotify Track';
-            if (url.includes('youtube.com')) return 'YouTube Track';
-            if (url.includes('soundcloud.com')) return 'SoundCloud Track';
-            return 'Unknown Track';
+            if (url.includes('spotify.com')) return 'Electronic Dreams';
+            if (url.includes('youtube.com')) return 'Cinematic Journey';
+            if (url.includes('soundcloud.com')) return 'Ambient Soundscape';
+            return 'Reference Track';
         }
         
         function extractComposer(url) {
             // Simple extraction - in a real app, you'd use APIs
-            return 'Unknown Artist';
+            return 'Demo Artist';
         }
         
         function addToHistory(track, composer, url) {
@@ -392,7 +514,159 @@
             const selectedInstruments = Array.from(document.querySelectorAll('.instrument-filter:checked')).map(cb => cb.value);
             
             console.log('Applied filters:', { selectedGenres, selectedMoods, selectedInstruments });
+            
+            // Show filter notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+            notification.textContent = `Filters applied: ${selectedGenres.length + selectedMoods.length + selectedInstruments.length} selected`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+            
             closePanel(filtersPanel, overlay);
+        });
+        
+        // Loading state
+        function showLoadingState() {
+            getShortlistBtn.classList.add('loading');
+            getShortlistBtn.disabled = true;
+            
+            // Show loading message
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loadingMessage';
+            loadingDiv.className = 'text-center mt-4 text-gray-600';
+            loadingDiv.innerHTML = `
+                <div class="flex items-center justify-center space-x-2">
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-red-500"></div>
+                    <span>AI is analyzing your track...</span>
+                </div>
+                <div class="mt-2 text-sm text-gray-500">
+                    Extracting audio features, matching composers, and generating shortlist
+                </div>
+            `;
+            getShortlistBtn.parentNode.appendChild(loadingDiv);
+        }
+        
+        // Show results
+        function showResults() {
+            // Remove loading state
+            getShortlistBtn.classList.remove('loading');
+            getShortlistBtn.disabled = false;
+            const loadingMessage = document.getElementById('loadingMessage');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+            
+            // Create results container
+            const resultsContainer = document.createElement('div');
+            resultsContainer.id = 'resultsContainer';
+            resultsContainer.className = 'mt-12 max-w-4xl mx-auto';
+            
+            resultsContainer.innerHTML = `
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-2">Composer Shortlist</h2>
+                    <p class="text-gray-600">AI-matched composers ranked by similarity to your reference track</p>
+                </div>
+                
+                <div class="space-y-4">
+                    ${mockComposers.map(composer => `
+                        <div class="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow duration-200">
+                            <div class="flex items-start space-x-4">
+                                <img src="${composer.avatar}" alt="${composer.name}" class="w-16 h-16 rounded-full object-cover">
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h3 class="text-lg font-semibold text-gray-800">${composer.name}</h3>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-sm text-gray-500">Match Score:</span>
+                                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm font-medium">
+                                                ${Math.round(composer.matchScore * 100)}%
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <h4 class="text-md font-medium text-gray-700 mb-1">${composer.trackTitle}</h4>
+                                        <p class="text-sm text-gray-500">${composer.experience} • ${composer.location}</p>
+                                    </div>
+                                    
+                                    <div class="flex flex-wrap gap-2 mb-3">
+                                        ${composer.genres.map(genre => `
+                                            <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">${genre}</span>
+                                        `).join('')}
+                                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">${composer.mood}</span>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex space-x-4 text-sm text-gray-500">
+                                            <span>🎵 ${composer.instruments.join(', ')}</span>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm transition-colors duration-200">
+                                                Preview
+                                            </button>
+                                            <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors duration-200">
+                                                Contact
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- AI Analysis Breakdown -->
+                                    <div class="mt-4 pt-4 border-t border-gray-100">
+                                        <h5 class="text-sm font-medium text-gray-600 mb-2">AI Analysis Breakdown:</h5>
+                                        <div class="grid grid-cols-2 gap-2 text-xs">
+                                            ${Object.entries(composer.tags).map(([tag, score]) => `
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-500">${tag}:</span>
+                                                    <span class="text-gray-700">${Math.round(score * 100)}%</span>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="text-center mt-8">
+                    <button id="newSearchBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors duration-200">
+                        New Search
+                    </button>
+                </div>
+            `;
+            
+            // Insert results after the main container
+            const mainContainer = document.querySelector('.container');
+            mainContainer.appendChild(resultsContainer);
+            
+            // Scroll to results
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+            
+            // Add new search functionality
+            document.getElementById('newSearchBtn').addEventListener('click', () => {
+                resultsContainer.remove();
+                urlInput.value = '';
+                fileInput.value = '';
+                urlInput.style.color = '#6b7280';
+            });
+        }
+        
+        // Demo buttons
+        demoSpotify.addEventListener('click', () => {
+            urlInput.value = 'https://open.spotify.com/track/4u7EnebtmKWzUH433cf5Qv';
+            urlInput.style.color = '#059669';
+        });
+        
+        demoYouTube.addEventListener('click', () => {
+            urlInput.value = 'https://youtube.com/watch?v=dQw4w9WgXcQ';
+            urlInput.style.color = '#059669';
+        });
+        
+        demoFile.addEventListener('click', () => {
+            urlInput.value = 'Uploaded: demo-track.mp3';
+            urlInput.style.color = '#059669';
         });
         
         // Initialize
