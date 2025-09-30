@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MassiveMusic - Get Shortlist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 50%, #ffa8a8 100%);
+        }
+        
+        .slide-in-left {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .slide-in-left.active {
+            transform: translateX(0);
+        }
+        
+        .slide-in-right {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .slide-in-right.active {
+            transform: translateX(0);
+        }
+        
+        .drag-over {
+            border-color: #ff6b6b;
+            background-color: #fef2f2;
+        }
+        
+        .file-input-hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-white min-h-screen">
+    <!-- Header with gradient -->
+    <div class="gradient-header h-2 w-full"></div>
+    
+    <!-- Main container -->
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Logo -->
+        <div class="text-center mb-16">
+            <h1 class="text-4xl font-bold text-black tracking-tight">MASSIVEMUSIC</h1>
+        </div>
+        
+        <!-- Side buttons -->
+        <div class="flex justify-between items-start mb-12">
+            <!-- History button -->
+            <button id="historyBtn" class="bg-gray-100 hover:bg-red-100 text-gray-700 hover:text-red-600 px-6 py-3 rounded-lg transition-all duration-200 font-medium">
+                History
+            </button>
+            
+            <!-- Filters button -->
+            <button id="filtersBtn" class="bg-gray-100 hover:bg-red-100 text-gray-700 hover:text-red-600 px-6 py-3 rounded-lg transition-all duration-200 font-medium">
+                Filters
+            </button>
+        </div>
+        
+        <!-- Main input area -->
+        <div class="text-center">
+            <!-- Input field -->
+            <div class="mb-8">
+                <div id="dropZone" class="bg-white border-2 border-dashed border-gray-300 rounded-xl p-12 max-w-2xl mx-auto cursor-pointer hover:border-gray-400 transition-colors duration-200">
+                    <div class="text-center">
+                        <div class="text-gray-400 text-lg mb-4">
+                            <svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                        </div>
+                        <p class="text-gray-500 text-lg">Paste track link or upload file</p>
+                        <p class="text-gray-400 text-sm mt-2">Supports Spotify, YouTube, SoundCloud, MP3, WAV, AIFF, FLAC</p>
+                    </div>
+                    <input type="text" id="urlInput" class="w-full p-4 border border-gray-300 rounded-lg mt-4 text-center text-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Or paste a track URL here...">
+                    <input type="file" id="fileInput" class="file-input-hidden" accept=".mp3,.wav,.aiff,.flac,audio/*">
+                </div>
+            </div>
+            
+            <!-- Get shortlist button -->
+            <button id="getShortlistBtn" class="bg-black hover:bg-gray-800 text-white px-12 py-4 rounded-lg text-lg font-medium transition-colors duration-200">
+                Get shortlist
+            </button>
+        </div>
+    </div>
+    
+    <!-- History Panel -->
+    <div id="historyPanel" class="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl slide-in-left z-50">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold text-gray-800">History</h2>
+                <button id="closeHistory" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="historyList" class="space-y-3">
+                <!-- History items will be populated here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filters Panel -->
+    <div id="filtersPanel" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl slide-in-right z-50">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold text-gray-800">Filters</h2>
+                <button id="closeFilters" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Genre Filter -->
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-700 mb-3">Genre</h3>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="genre-filter" value="electronic" class="mr-3">
+                        <span class="text-gray-600">Electronic</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="genre-filter" value="rock" class="mr-3">
+                        <span class="text-gray-600">Rock</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="genre-filter" value="pop" class="mr-3">
+                        <span class="text-gray-600">Pop</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="genre-filter" value="classical" class="mr-3">
+                        <span class="text-gray-600">Classical</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="genre-filter" value="jazz" class="mr-3">
+                        <span class="text-gray-600">Jazz</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Mood Filter -->
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-700 mb-3">Mood</h3>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="mood-filter" value="energetic" class="mr-3">
+                        <span class="text-gray-600">Energetic</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="mood-filter" value="calm" class="mr-3">
+                        <span class="text-gray-600">Calm</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="mood-filter" value="melancholic" class="mr-3">
+                        <span class="text-gray-600">Melancholic</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="mood-filter" value="uplifting" class="mr-3">
+                        <span class="text-gray-600">Uplifting</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Instrumentation Filter -->
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-700 mb-3">Instrumentation</h3>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="instrument-filter" value="guitar" class="mr-3">
+                        <span class="text-gray-600">Guitar</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="instrument-filter" value="piano" class="mr-3">
+                        <span class="text-gray-600">Piano</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="instrument-filter" value="strings" class="mr-3">
+                        <span class="text-gray-600">Strings</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="instrument-filter" value="drums" class="mr-3">
+                        <span class="text-gray-600">Drums</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Apply Filters Button -->
+            <button id="applyFilters" class="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-medium transition-colors duration-200">
+                Apply Filters
+            </button>
+        </div>
+    </div>
+    
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+    
+    <script>
+        // DOM elements
+        const historyBtn = document.getElementById('historyBtn');
+        const filtersBtn = document.getElementById('filtersBtn');
+        const historyPanel = document.getElementById('historyPanel');
+        const filtersPanel = document.getElementById('filtersPanel');
+        const closeHistory = document.getElementById('closeHistory');
+        const closeFilters = document.getElementById('closeFilters');
+        const overlay = document.getElementById('overlay');
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const urlInput = document.getElementById('urlInput');
+        const getShortlistBtn = document.getElementById('getShortlistBtn');
+        const historyList = document.getElementById('historyList');
+        const applyFilters = document.getElementById('applyFilters');
+        
+        // History data (in a real app, this would come from localStorage or API)
+        let searchHistory = [
+            { track: "Bohemian Rhapsody", composer: "Queen", url: "https://open.spotify.com/track/4u7EnebtmKWzUH433cf5Qv" },
+            { track: "Imagine", composer: "John Lennon", url: "https://open.spotify.com/track/7pKfPomrE7XiB8qQ4FSkYc" },
+            { track: "Hotel California", composer: "Eagles", url: "https://open.spotify.com/track/40riOy7x9W7GXjyGp4pjAv" }
+        ];
+        
+        // Panel management
+        function openPanel(panel, overlay) {
+            panel.classList.add('active');
+            overlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closePanel(panel, overlay) {
+            panel.classList.remove('active');
+            overlay.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // History panel
+        historyBtn.addEventListener('click', () => {
+            openPanel(historyPanel, overlay);
+            renderHistory();
+        });
+        
+        closeHistory.addEventListener('click', () => {
+            closePanel(historyPanel, overlay);
+        });
+        
+        // Filters panel
+        filtersBtn.addEventListener('click', () => {
+            openPanel(filtersPanel, overlay);
+        });
+        
+        closeFilters.addEventListener('click', () => {
+            closePanel(filtersPanel, overlay);
+        });
+        
+        // Close panels when clicking overlay
+        overlay.addEventListener('click', () => {
+            closePanel(historyPanel, overlay);
+            closePanel(filtersPanel, overlay);
+        });
+        
+        // File upload and drag-and-drop
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                handleFileUpload(file);
+            }
+        });
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+        
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('audio/') || file.name.match(/\.(mp3|wav|aiff|flac)$/i)) {
+                    handleFileUpload(file);
+                } else {
+                    alert('Please upload an audio file (MP3, WAV, AIFF, FLAC)');
+                }
+            }
+        });
+        
+        function handleFileUpload(file) {
+            // In a real app, you would upload the file to a server
+            console.log('File uploaded:', file.name);
+            urlInput.value = `Uploaded: ${file.name}`;
+            urlInput.style.color = '#059669';
+        }
+        
+        // URL input handling
+        urlInput.addEventListener('input', (e) => {
+            const url = e.target.value;
+            if (url && (url.includes('spotify.com') || url.includes('youtube.com') || url.includes('soundcloud.com'))) {
+                urlInput.style.color = '#059669';
+            } else if (url) {
+                urlInput.style.color = '#dc2626';
+            } else {
+                urlInput.style.color = '#6b7280';
+            }
+        });
+        
+        // Get shortlist button
+        getShortlistBtn.addEventListener('click', () => {
+            const url = urlInput.value;
+            const file = fileInput.files[0];
+            
+            if (!url && !file) {
+                alert('Please paste a track URL or upload a file');
+                return;
+            }
+            
+            // Add to history
+            if (url) {
+                const trackName = extractTrackName(url);
+                const composer = extractComposer(url);
+                addToHistory(trackName, composer, url);
+            }
+            
+            // In a real app, this would make an API call
+            console.log('Getting shortlist for:', url || file.name);
+            alert('Shortlist generated! (This is a demo)');
+        });
+        
+        function extractTrackName(url) {
+            // Simple extraction - in a real app, you'd use APIs
+            if (url.includes('spotify.com')) return 'Spotify Track';
+            if (url.includes('youtube.com')) return 'YouTube Track';
+            if (url.includes('soundcloud.com')) return 'SoundCloud Track';
+            return 'Unknown Track';
+        }
+        
+        function extractComposer(url) {
+            // Simple extraction - in a real app, you'd use APIs
+            return 'Unknown Artist';
+        }
+        
+        function addToHistory(track, composer, url) {
+            const newItem = { track, composer, url };
+            searchHistory.unshift(newItem);
+            if (searchHistory.length > 10) {
+                searchHistory = searchHistory.slice(0, 10);
+            }
+            renderHistory();
+        }
+        
+        function renderHistory() {
+            historyList.innerHTML = '';
+            searchHistory.forEach((item, index) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors duration-200';
+                historyItem.innerHTML = `
+                    <div class="font-medium text-gray-800">${item.track}</div>
+                    <div class="text-sm text-gray-500">${item.composer}</div>
+                `;
+                historyItem.addEventListener('click', () => {
+                    urlInput.value = item.url;
+                    urlInput.style.color = '#059669';
+                    closePanel(historyPanel, overlay);
+                });
+                historyList.appendChild(historyItem);
+            });
+        }
+        
+        // Filters
+        applyFilters.addEventListener('click', () => {
+            const selectedGenres = Array.from(document.querySelectorAll('.genre-filter:checked')).map(cb => cb.value);
+            const selectedMoods = Array.from(document.querySelectorAll('.mood-filter:checked')).map(cb => cb.value);
+            const selectedInstruments = Array.from(document.querySelectorAll('.instrument-filter:checked')).map(cb => cb.value);
+            
+            console.log('Applied filters:', { selectedGenres, selectedMoods, selectedInstruments });
+            closePanel(filtersPanel, overlay);
+        });
+        
+        // Initialize
+        renderHistory();
+    </script>
+</body>
+</html>
