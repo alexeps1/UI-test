@@ -114,6 +114,15 @@
             border-bottom: none;
         }
         
+        .track-card {
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        
+        .track-card:hover {
+            transform: translateY(-1px);
+        }
+        
         .file-input-hidden {
             display: none;
         }
@@ -344,6 +353,101 @@
             { track: "Bohemian Rhapsody", composer: "Queen", url: "https://open.spotify.com/track/4u7EnebtmKWzUH433cf5Qv" },
             { track: "Imagine", composer: "John Lennon", url: "https://open.spotify.com/track/7pKfPomrE7XiB8qQ4FSkYc" },
             { track: "Hotel California", composer: "Eagles", url: "https://open.spotify.com/track/40riOy7x9W7GXjyGp4pjAv" }
+        ];
+        
+        // Mock track data for track view
+        const mockTracks = [
+            {
+                id: 1,
+                title: "Digital Dreams",
+                composer: "Lucas Chen",
+                composerId: 1,
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+                matchScore: 0.94,
+                duration: "3:24",
+                genre: "Electronic",
+                mood: "Energetic",
+                trackUrl: "https://open.spotify.com/track/example1",
+                tags: { electronic: 0.89, ambient: 0.76, cinematic: 0.82, energetic: 0.91 }
+            },
+            {
+                id: 2,
+                title: "Midnight Reflections",
+                composer: "Sophie Martinez",
+                composerId: 2,
+                avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+                matchScore: 0.87,
+                duration: "4:12",
+                genre: "Rock",
+                mood: "Melancholic",
+                trackUrl: "https://open.spotify.com/track/example2",
+                tags: { rock: 0.85, alternative: 0.78, indie: 0.72, melancholic: 0.88 }
+            },
+            {
+                id: 3,
+                title: "Urban Jazzscape",
+                composer: "James Thompson",
+                composerId: 3,
+                avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+                matchScore: 0.82,
+                duration: "5:08",
+                genre: "Jazz",
+                mood: "Uplifting",
+                trackUrl: "https://open.spotify.com/track/example3",
+                tags: { jazz: 0.91, fusion: 0.74, experimental: 0.68, uplifting: 0.83 }
+            },
+            {
+                id: 4,
+                title: "Symphony of Light",
+                composer: "Anna Kowalski",
+                composerId: 4,
+                avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+                matchScore: 0.79,
+                duration: "6:45",
+                genre: "Classical",
+                mood: "Calm",
+                trackUrl: "https://open.spotify.com/track/example4",
+                tags: { classical: 0.88, orchestral: 0.85, minimalist: 0.71, calm: 0.92 }
+            },
+            {
+                id: 5,
+                title: "City Pulse",
+                composer: "Daniel Park",
+                composerId: 5,
+                avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+                matchScore: 0.76,
+                duration: "3:56",
+                genre: "Hip-Hop",
+                mood: "Energetic",
+                trackUrl: "https://open.spotify.com/track/example5",
+                tags: { hiphop: 0.82, rnb: 0.75, pop: 0.69, energetic: 0.87 }
+            },
+            {
+                id: 6,
+                title: "Neon Nights",
+                composer: "Lucas Chen",
+                composerId: 1,
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+                matchScore: 0.73,
+                duration: "4:33",
+                genre: "Electronic",
+                mood: "Energetic",
+                trackUrl: "https://open.spotify.com/track/example6",
+                tags: { electronic: 0.85, ambient: 0.68, cinematic: 0.75, energetic: 0.88 }
+            },
+            {
+                id: 7,
+                title: "Ocean Waves",
+                composer: "Sophie Martinez",
+                composerId: 2,
+                avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+                matchScore: 0.71,
+                duration: "3:18",
+                genre: "Alternative",
+                mood: "Calm",
+                trackUrl: "https://open.spotify.com/track/example7",
+                tags: { rock: 0.72, alternative: 0.89, indie: 0.81, calm: 0.85 }
+            }
         ];
         
         // Mock similar composers data
@@ -742,54 +846,63 @@
                 <div class="text-center mb-8">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-2">Composer Shortlist</h2>
                     <p class="text-gray-600">AI-matched composers ranked by similarity to your reference track</p>
+                    
+                    <!-- View Toggle Switch -->
+                    <div class="mt-6 flex items-center justify-center space-x-4">
+                        <span class="text-sm text-gray-600">Composers</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="viewToggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
+                        </label>
+                        <span class="text-sm text-gray-600">Tracks</span>
+                    </div>
                 </div>
                 
-                <div class="space-y-4">
+                <!-- Composer View -->
+                <div id="composerView" class="space-y-3">
                     ${mockComposers.map(composer => `
-                        <div class="composer-card bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200">
-                            <div class="flex items-center space-x-4">
-                                <img src="${composer.avatar}" alt="${composer.name}" class="w-12 h-12 rounded-full object-cover">
+                        <div class="composer-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200">
+                            <div class="flex items-center space-x-3">
+                                <img src="${composer.avatar}" alt="${composer.name}" class="w-10 h-10 rounded-full object-cover">
                                 <div class="flex-1">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <h3 class="text-lg font-semibold text-gray-800">${composer.name}</h3>
-                                            <p class="text-sm text-gray-500">${composer.trackTitle}</p>
+                                            <h3 class="text-md font-semibold text-gray-800">${composer.name}</h3>
+                                            <p class="text-xs text-gray-500">${composer.experience} • ${composer.location}</p>
                                         </div>
                                         <div class="flex items-center space-x-2">
-                                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm font-medium">
+                                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
                                                 ${Math.round(composer.matchScore * 100)}%
                                             </span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="flex space-x-2">
-                                    <button class="similarity-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200" data-composer-id="${composer.id}">
+                                    <button class="similarity-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs font-medium transition-all duration-200" data-composer-id="${composer.id}">
                                         Similar
                                     </button>
-                                    <button class="play-btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105" data-track="${composer.trackUrl}">
+                                    <button class="play-btn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105" data-track="${composer.trackUrl}">
                                         ▶ Play
                                     </button>
-                                    <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105">
+                                    <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105">
                                         Contact
                                     </button>
                                 </div>
                             </div>
                             
                             <!-- Hover details -->
-                            <div class="composer-details mt-4 pt-4 border-t border-gray-100">
-                                <div class="flex flex-wrap gap-2 mb-3">
+                            <div class="composer-details mt-3 pt-3 border-t border-gray-100">
+                                <div class="flex flex-wrap gap-1 mb-2">
                                     ${composer.genres.map(genre => `
                                         <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">${genre}</span>
                                     `).join('')}
                                     <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">${composer.mood}</span>
                                 </div>
-                                <div class="text-sm text-gray-500 mb-3">
+                                <div class="text-xs text-gray-500 mb-2">
                                     <span>🎵 ${composer.instruments.join(', ')}</span>
-                                    <span class="ml-4">📍 ${composer.location}</span>
-                                    <span class="ml-4">💼 ${composer.experience}</span>
                                 </div>
-                                <div class="grid grid-cols-2 gap-2 text-xs">
-                                    <h5 class="text-sm font-medium text-gray-600 mb-2 col-span-2">AI Analysis:</h5>
+                                <div class="grid grid-cols-2 gap-1 text-xs">
+                                    <h5 class="text-xs font-medium text-gray-600 mb-1 col-span-2">AI Analysis:</h5>
                                     ${Object.entries(composer.tags).map(([tag, score]) => `
                                         <div class="flex justify-between">
                                             <span class="text-gray-500">${tag}:</span>
@@ -803,6 +916,59 @@
                             <div class="similarity-menu" id="similarity-${composer.id}">
                                 <div class="p-2 text-xs text-gray-500 border-b">Similar composers:</div>
                                 ${similarComposers[composer.id] ? similarComposers[composer.id].map(similar => `
+                                    <div class="similarity-item" data-composer="${similar.name}">
+                                        <div class="font-medium text-gray-800">${similar.name}</div>
+                                        <div class="text-xs text-gray-500">${similar.genre} • ${Math.round(similar.match * 100)}% match</div>
+                                    </div>
+                                `).join('') : '<div class="p-3 text-sm text-gray-500">No similar composers found</div>'}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <!-- Track View -->
+                <div id="trackView" class="space-y-3 hidden">
+                    ${mockTracks.sort((a, b) => b.matchScore - a.matchScore).map(track => `
+                        <div class="track-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200">
+                            <div class="flex items-center space-x-4">
+                                <img src="${track.avatar}" alt="${track.composer}" class="w-10 h-10 rounded-full object-cover">
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="text-md font-semibold text-gray-800">${track.title}</h3>
+                                            <p class="text-sm text-gray-500">by ${track.composer}</p>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <span class="text-sm text-gray-400">${track.duration}</span>
+                                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+                                                ${Math.round(track.matchScore * 100)}%
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between mt-2">
+                                        <div class="flex space-x-2">
+                                            <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">${track.genre}</span>
+                                            <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">${track.mood}</span>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button class="similarity-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs font-medium transition-all duration-200" data-composer-id="${track.composerId}">
+                                                Similar
+                                            </button>
+                                            <button class="play-btn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105" data-track="${track.trackUrl}">
+                                                ▶ Play
+                                            </button>
+                                            <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium transition-all duration-200 transform hover:scale-105">
+                                                Contact
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Similarity menu for tracks -->
+                            <div class="similarity-menu" id="similarity-track-${track.id}">
+                                <div class="p-2 text-xs text-gray-500 border-b">Similar composers:</div>
+                                ${similarComposers[track.composerId] ? similarComposers[track.composerId].map(similar => `
                                     <div class="similarity-item" data-composer="${similar.name}">
                                         <div class="font-medium text-gray-800">${similar.name}</div>
                                         <div class="text-xs text-gray-500">${similar.genre} • ${Math.round(similar.match * 100)}% match</div>
@@ -861,6 +1027,25 @@
                     showNotification(`Searching for ${composerName}...`, 'info');
                     // In a real app, this would trigger a new search for the similar composer
                 });
+            });
+            
+            // Add view toggle functionality
+            const viewToggle = document.getElementById('viewToggle');
+            const composerView = document.getElementById('composerView');
+            const trackView = document.getElementById('trackView');
+            
+            viewToggle.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    // Switch to track view
+                    composerView.classList.add('hidden');
+                    trackView.classList.remove('hidden');
+                    showNotification('Switched to track view', 'info');
+                } else {
+                    // Switch to composer view
+                    trackView.classList.add('hidden');
+                    composerView.classList.remove('hidden');
+                    showNotification('Switched to composer view', 'info');
+                }
             });
         }
         
